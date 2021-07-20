@@ -3,3 +3,6 @@
 *.pyc
 __pycache__/car_racing.cpython-37.pyc
 Test.ipynb
+results.zip
+.ipynb_checkpoints/Main-checkpoint.ipynb
+__pycache__/car_racing.cpython-37.pyc

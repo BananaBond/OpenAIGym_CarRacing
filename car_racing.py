@@ -29,10 +29,8 @@ class CarRacingEnvironment(BaseEnvironment):
         #returns observation that is specific to environment youre using
         observation = self.env.reset()
         is_terminal = False
-        pixels = observation.shape[0]
 
-        observation = observation[:,:,1]
-        observation = np.resize(observation, (pixels*pixels,))
+        # observation = observation[:,:,1]
         self.reward_obs_term = (reward, observation, is_terminal)
 
         # return first state observation from the environment
@@ -56,10 +54,7 @@ class CarRacingEnvironment(BaseEnvironment):
         last_state = self.reward_obs_term[1]
         current_state, reward, is_terminal, _ = self.env.step(actions)
         # sending only the green component of the RGB image as a vector
-        pixels = current_state.shape[0]
-
-        current_state = current_state[:,:,1]
-        current_state = np.resize(current_state, (pixels*pixels,))
+        # current_state = current_state[:,:,1]
 
         self.reward_obs_term = (reward, current_state, is_terminal)
         if renderEnv:
