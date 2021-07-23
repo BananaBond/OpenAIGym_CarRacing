@@ -14,7 +14,13 @@ class CarRacingEnvironment(BaseEnvironment):
         """
         self.env = gym.make("CarRacing-v0")
         self.env.seed(0)
+        self.action_space = [[1.0, 0.0, 0.0],            #Right
+                            [-1.0, 0.0, 0.0],           #Left
+                            [0.0, 1.0, 0.0],             #Forward
+                            [0.0, 0.0, 1.0],             #Brake
+                            [0.0, 0.0, 0.0]             #Do nothing
 
+                                ]
     def env_start(self):
         """
         The first method called when the experiment starts, called before the
@@ -29,7 +35,7 @@ class CarRacingEnvironment(BaseEnvironment):
         #returns observation that is specific to environment youre using
         observation = self.env.reset()
         is_terminal = False
-
+        observation = observation.astype('float32')
         # observation = observation[:,:,1]
         self.reward_obs_term = (reward, observation, is_terminal)
 
@@ -48,11 +54,11 @@ class CarRacingEnvironment(BaseEnvironment):
             (float, state, Boolean): a tuple of the reward, state observation,
                 and boolean indicating if it's terminal.
         """
-        actions = np.zeros((5,), dtype=int)
-        actions[action] = 1
+        car_action = self.action_space[int(action)]
 
         last_state = self.reward_obs_term[1]
-        current_state, reward, is_terminal, _ = self.env.step(actions)
+        current_state, reward, is_terminal, _ = self.env.step(car_action)
+        current_state = current_state.astype('float32')
         # sending only the green component of the RGB image as a vector
         # current_state = current_state[:,:,1]
 

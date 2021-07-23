@@ -22,7 +22,8 @@ class RLGlue:
         self.last_action = None
         self.num_steps = None
         self.num_episodes = None
-
+        self.negative_duration = None
+        self.max_negative = None
     def rl_init(self, agent_init_info={}, env_init_info={}):
         """Initial method called when RLGlue experiment is created"""
         self.environment.env_init(env_init_info)
@@ -31,17 +32,18 @@ class RLGlue:
         self.total_reward = 0.0
         self.num_steps = 0
         self.num_episodes = 0
-
+        self.negative_duration = 0
+        self.max_negative = 200
     def rl_start(self, agent_start_info={}, env_start_info={}):
         """Starts RLGlue experiment
 
         Returns:
             tuple: (state, action)
         """
-
+        self.negative_duration = 0
         self.total_reward = 0.0
         self.num_steps = 1
-
+        self.max_negative = 200
         last_state = self.environment.env_start()
         self.last_action = self.agent.agent_start(last_state)
 
@@ -91,7 +93,7 @@ class RLGlue:
         """
         self.total_reward = 0.0
         self.num_steps = 1
-
+        self.negative_duration = 0
         this_observation = self.environment.env_start()
 
         return this_observation
@@ -212,7 +214,12 @@ class RLGlue:
                                      (self.num_steps < max_steps_this_episode)):
             rl_step_result = self.rl_step()
             is_terminal = rl_step_result[3]
-
+            if self.total_reward < 0:
+                self.negative_duration += 1
+            if self.negative_duration > self.max_negative:
+                self.total_reward -= 10
+                is_terminal = 1
+                print("Terminated episode. Max_negative exceeded " + "with reward = "+str(self.total_reward))
         return is_terminal
 
     def trained_rl_episode(self, max_steps_this_episode):
